@@ -1,0 +1,50 @@
+import cv2
+import numpy as np
+
+def solve_pnp_with_epnp_ransac(object_points, image_points, camera_matrix):
+    """
+    Solve the PnP problem using the EPNP method with RANSAC.
+    
+    Parameters:
+    - object_points: 3D object points.
+    - image_points: 2D image points.
+    - camera_matrix: Camera calibration matrix.
+    - dist_coeffs: Camera distortion coefficients.
+    
+    Returns:
+    - success: Boolean indicating if the PnP solution exists.
+    - pose: 4x4 pose matrix.
+    - inliers: Inliers from the RANSAC algorithm.
+    """
+    
+    success, rvec, tvec, inliers = cv2.solvePnPRansac(
+        object_points,
+        image_points,
+        camera_matrix,
+        flags=cv2.SOLVEPNP_EPNP
+    )
+
+    # Convert rvec to a rotation matrix
+    rotation_matrix, _ = cv2.Rodrigues(rvec)
+    
+    # Create the pose matrix
+    pose = np.eye(4)
+    pose[:3, :3] = rotation_matrix
+    pose[:3, 3] = tvec.squeeze()
+
+    return success, pose, inliers
+
+
+def main():
+
+    # Example Usage
+    # object_points = [...]  # List of 3D points
+    # image_points = [...]   # Corresponding list of 2D points
+    # camera_matrix = [...]  # Camera calibration matrix
+    # dist_coeffs = [...]    # Camera distortion coefficients
+
+    # success, pose, inliers = solve_pnp_with_epnp_ransac(object_points, image_points, camera_matrix, dist_coeffs)
+    pass
+
+if __name__ == "__main__":
+    main()
